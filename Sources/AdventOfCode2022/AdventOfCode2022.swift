@@ -1,8 +1,22 @@
-@main
-public struct AdventOfCode2022 {
-    public private(set) var text = "Hello, World!"
+import ArgumentParser
 
-    public static func main() {
-        print(AdventOfCode2022().text)
+@main
+struct AdventOfCode2022 : ParsableCommand {
+    static let configuration = CommandConfiguration(commandName: "AOC2022",
+                                                    subcommands: commands,
+                                                    defaultSubcommand: commands[commands.endIndex - 1])
+    
+    static let commands = [Day1.self]
+}
+
+extension AdventOfCode2022 {
+    struct Day1: ParsableCommand {
+        @Option(name: .shortAndLong, help: "Input File")
+        var inputFile = "Data/Day1/test.txt"
+        
+        func run() {
+            let d = DataReader(inputPath: inputFile)
+            SolutionDay1.Day1Part1()
+        }
     }
 }
