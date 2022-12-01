@@ -1,10 +1,9 @@
 struct SolutionDay1 {
-    static func Day1Part1(input: String) {
-        
+    static func Day1(input: [String]) {
         var elfLists:[[Int]] = []
         var tempList:[Int] = []
         
-        for element in input.split(separator: "\n", omittingEmptySubsequences: false) {
+        for element in input {
             if element == "" {
                 elfLists.append(tempList)
                 tempList = []
@@ -13,13 +12,11 @@ struct SolutionDay1 {
             }
         }
         
-        let totals = elfLists.map {
-            $0.reduce(0, +)
-        }
+        let totals = elfLists.map { $0.reduce(0, +) }
         
+        print("Part 1")
         print(totals.max()!)
-        
-        print(totals.sorted().reversed().prefix(3).reduce(0, +))
+        print("Part 2")
+        print(totals.sorted().suffix(3).reduce(0, +))
     }
-    
 }

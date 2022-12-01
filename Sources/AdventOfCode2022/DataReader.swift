@@ -10,12 +10,9 @@ struct DataReader {
     
     func dataAsIntArray() -> [Int] {
         do {
-            let contents = try String(contentsOf: self.inputUrl!)
-            let result = contents.split(separator: "\n").map
-            { (s) -> Int in
-                return Int(s) ?? -1
-            }
-            return result
+            return try String(contentsOf: self.inputUrl!)
+                .split(separator: "\n")
+                .map{ Int($0) ?? -1 }
         } catch {
             print("Error: \(error)")
         }
@@ -24,24 +21,18 @@ struct DataReader {
     
     func dataAsString() -> String {
         do {
-            let result = try String(contentsOf: self.inputUrl!)
-            return result
+            return try String(contentsOf: self.inputUrl!)
         } catch {
             print("Error: \(error)")
         }
         return ""
     }
     
-    func dataAsStringArray() -> [String] {
+    func dataAsStringArray(omittingEmptySubsequences:Bool = false) -> [String] {
         do {
-            let contents = try String(contentsOf: self.inputUrl!)
-            let result = contents
-                .split(separator: "\n")
-                .map {
-                    String($0)
-                }
-            
-            return result
+            return try String(contentsOf: self.inputUrl!)
+                .split(separator: "\n", omittingEmptySubsequences: omittingEmptySubsequences)
+                .map { String($0) }
         } catch {
             print("Error: \(error)")
         }
