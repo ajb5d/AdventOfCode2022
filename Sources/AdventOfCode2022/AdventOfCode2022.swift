@@ -12,11 +12,11 @@ struct AdventOfCode2022 : ParsableCommand {
 extension AdventOfCode2022 {
     struct Day1: ParsableCommand {
         @Option(name: .shortAndLong, help: "Input File")
-        var inputFile = "Data/Day1/test.txt"
+        var inputFile = "Data/Day1/input"
         
         func run() {
             let d = DataReader(inputPath: inputFile)
-            SolutionDay1.Day1Part1()
+            SolutionDay1.Day1Part1(input:d.dataAsString())
         }
     }
 }

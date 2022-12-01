@@ -17,6 +17,8 @@ let package = Package(
             name: "AdventOfCode2022",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ], resources: [
+                .copy("Data")
             ]),
         .testTarget(
             name: "AdventOfCode2022Tests",
