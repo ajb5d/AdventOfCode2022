@@ -1,7 +1,5 @@
 import ArgumentParser
 
-
-
 @main
 struct AdventOfCode2022 : ParsableCommand {
     
@@ -11,20 +9,5 @@ struct AdventOfCode2022 : ParsableCommand {
                                                     subcommands: commands,
                                                     defaultSubcommand: commands[commands.endIndex - 1])
     
-    static let commands = [Day1.self]
-}
-
-extension AdventOfCode2022 {
-    
-    
-    struct Day1: ParsableCommand {
-        
-        @Option(name: .shortAndLong, help: "Input File")
-        var inputFile = "Data/Day1/" + "input"
-        
-        func run() {
-            let d = DataReader(inputPath: inputFile)
-            SolutionDay1.Day1(input:d.dataAsStringArray())
-        }
-    }
+    static let commands : [ParsableCommand.Type] = [Day1.self, Day2.self]
 }

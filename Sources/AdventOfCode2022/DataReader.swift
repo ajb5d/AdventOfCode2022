@@ -1,12 +1,25 @@
 import Foundation
 
 struct DataReader {
-    let inputPath : String
-    
-    var inputUrl : URL? {
-        let url = Bundle.module.url(forResource: inputPath, withExtension: "txt")
-        return url
+    enum DataScenario : String {
+        case test, input
     }
+    var inputUrl : URL?
+    
+    init(inputPath: String?, taskName: String, scenario: DataScenario = .test) {
+        if let inputPath = inputPath {
+            self.inputUrl = URL(fileURLWithPath: inputPath)
+        } else {
+            let bundlePath = "Data/" + taskName + "/" + scenario.rawValue
+            self.inputUrl = Bundle.module.url(forResource: bundlePath, withExtension: "txt")
+        }
+        
+    }
+    
+//    var inputUrl : URL? {
+//        let url = Bundle.module.url(forResource: inputPath, withExtension: "txt")
+//        return url
+//    }
     
     func dataAsIntArray() -> [Int] {
         do {

@@ -1,3 +1,22 @@
+import ArgumentParser
+
+extension AdventOfCode2022 {
+    struct Day1: ParsableCommand {
+        @Option(name: .shortAndLong, help: "Input File")
+        var inputFile : String?
+        
+        var input = false
+        
+        func run() {
+            let d = DataReader(inputPath: inputFile,
+                               taskName: String(describing: type(of: self)),
+                               scenario: (input == false ? .test : .input))
+            
+            SolutionDay1.Day1(input:d.dataAsStringArray())
+        }
+    }
+}
+
 struct SolutionDay1 {
     static func Day1(input: [String]) {
         var elfLists:[[Int]] = []
