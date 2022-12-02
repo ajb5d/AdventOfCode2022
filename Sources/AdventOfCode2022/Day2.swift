@@ -23,19 +23,13 @@ struct SolutionDay2 {
         case paper, scissors, rock
         
         func willDominate() -> GameSide {
-            switch self {
-            case .paper: return .rock
-            case .scissors: return .paper
-            case .rock: return .scissors
-            }
+            let values : [GameSide:GameSide] = [.paper: .rock, .scissors: .paper, .rock: .scissors]
+            return values[self]!
         }
         
         func willBeDominatedBy() -> GameSide {
-            switch self {
-            case .paper: return .scissors
-            case .scissors: return .rock
-            case .rock: return .paper
-            }
+            let values : [GameSide:GameSide] = [.paper: .scissors, .scissors: .rock, .rock: .paper]
+            return values[self]!
         }
         
         func gameScore(other: GameSide) -> Int {
@@ -46,11 +40,8 @@ struct SolutionDay2 {
     }
     
     static func scoreRound(them : GameSide, you : GameSide) -> Int {
-        switch you {
-        case .paper: return 2 + you.gameScore(other: them)
-        case .scissors: return 3 + you.gameScore(other: them)
-        case .rock: return 1 + you.gameScore(other: them)
-        }
+        let values : [GameSide:Int] = [.paper: 2, .scissors: 3, .rock: 1]
+        return values[you]! + you.gameScore(other: them)
     }
     
     static func Day2Part1(input:[String]) {
@@ -84,9 +75,7 @@ struct SolutionDay2 {
         var totalScore = 0
         for round in input {
             let parts = round.split(separator: " ")
-            
-            var lhs : GameSide?
-            var rhs : GameSide?
+            var lhs : GameSide?, rhs : GameSide?
             
             switch parts[0] {
             case "A": lhs = .rock
@@ -102,12 +91,9 @@ struct SolutionDay2 {
             default: break
             }
             
-            print(lhs!, rhs!)
-            
             totalScore += SolutionDay2.scoreRound(them: lhs!, you: rhs!)
         }
         
         print(totalScore)
-        
     }
 }

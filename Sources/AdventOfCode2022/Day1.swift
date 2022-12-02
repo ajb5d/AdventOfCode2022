@@ -4,7 +4,6 @@ extension AdventOfCode2022 {
     struct Day1: ParsableCommand {
         @Option(name: .shortAndLong, help: "Input File")
         var inputFile : String?
-        
         var input = false
         
         func run() {
@@ -33,9 +32,7 @@ struct SolutionDay1 {
         
         let totals = elfLists.map { $0.reduce(0, +) }
         
-        print("Part 1")
         print(totals.max()!)
-        print("Part 2")
         print(totals.sorted().suffix(3).reduce(0, +))
     }
 }
