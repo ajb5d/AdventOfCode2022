@@ -2,9 +2,6 @@ import ArgumentParser
 
 @main
 struct AdventOfCode2022 : ParsableCommand {
-    
-
-    
     static let configuration = CommandConfiguration(commandName: "AOC2022",
                                                     subcommands: commands,
                                                     defaultSubcommand: commands[commands.endIndex - 1])

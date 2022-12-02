@@ -4,6 +4,7 @@ struct DataReader {
     enum DataScenario : String {
         case test, input
     }
+    
     var inputUrl : URL?
     
     init(inputPath: String?, taskName: String, scenario: DataScenario = .test) {
@@ -15,11 +16,6 @@ struct DataReader {
         }
         
     }
-    
-//    var inputUrl : URL? {
-//        let url = Bundle.module.url(forResource: inputPath, withExtension: "txt")
-//        return url
-//    }
     
     func dataAsIntArray() -> [Int] {
         do {

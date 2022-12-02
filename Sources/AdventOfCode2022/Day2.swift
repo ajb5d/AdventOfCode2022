@@ -5,7 +5,7 @@ extension AdventOfCode2022 {
     struct Day2: ParsableCommand {
         @Option(name: .shortAndLong, help: "Input File")
         var inputFile: String?
-        var input = false
+        var input = true
         
         func run() {
             let d = DataReader(inputPath: inputFile,
@@ -21,68 +21,55 @@ extension AdventOfCode2022 {
 struct SolutionDay2 {
     enum GameSide {
         case paper, scissors, rock
+        
+        func willDominate() -> GameSide {
+            switch self {
+            case .paper: return .rock
+            case .scissors: return .paper
+            case .rock: return .scissors
+            }
+        }
+        
+        func willBeDominatedBy() -> GameSide {
+            switch self {
+            case .paper: return .scissors
+            case .scissors: return .rock
+            case .rock: return .paper
+            }
+        }
+        
+        func gameScore(other: GameSide) -> Int {
+            if self == other { return 3 }
+            if other == self.willDominate() { return 6 }
+            return 0
+        }
     }
     
     static func scoreRound(them : GameSide, you : GameSide) -> Int {
-        var score = 0;
-        
         switch you {
-        case .paper:
-            score += 2
-            switch them {
-            case .paper:
-                score += 3
-            case .scissors: break
-            case .rock:
-                score += 6
-            }
-        case .scissors:
-            score += 3
-            switch them {
-            case .paper:
-                score += 6
-            case .scissors:
-                score += 3
-            case .rock: break
-            }
-        case .rock:
-            score += 1
-            switch them  {
-            case .paper: break
-            case .scissors:
-                score += 6
-            case .rock:
-                score += 3
-            }
+        case .paper: return 2 + you.gameScore(other: them)
+        case .scissors: return 3 + you.gameScore(other: them)
+        case .rock: return 1 + you.gameScore(other: them)
         }
-        return score
     }
     
     static func Day2Part1(input:[String]) {
         var totalScore = 0
         for round in input {
             let parts = round.split(separator: " ")
-            
-            var lhs : GameSide?
-            var rhs : GameSide?
+            var lhs : GameSide?, rhs : GameSide?
             
             switch parts[0] {
-            case "A":
-                lhs = .rock
-            case "B":
-                lhs = .paper
-            case "C":
-                lhs = .scissors
+            case "A": lhs = .rock
+            case "B": lhs = .paper
+            case "C": lhs = .scissors
             default: break
             }
             
             switch parts[1] {
-            case "X":
-                rhs = .rock
-            case "Y":
-                rhs = .paper
-            case "Z":
-                rhs = .scissors
+            case "X": rhs = .rock
+            case "Y": rhs = .paper
+            case "Z": rhs = .scissors
             default: break
             }
             
@@ -102,38 +89,20 @@ struct SolutionDay2 {
             var rhs : GameSide?
             
             switch parts[0] {
-            case "A":
-                lhs = .rock
-            case "B":
-                lhs = .paper
-            case "C":
-                lhs = .scissors
+            case "A": lhs = .rock
+            case "B": lhs = .paper
+            case "C": lhs = .scissors
             default: break
             }
             
             switch parts[1] {
-            case "X":
-                switch lhs! {
-                case .paper:
-                    rhs = .rock
-                case .scissors:
-                    rhs = .paper
-                case .rock:
-                    rhs = .scissors
-                }
-            case "Y":
-                rhs = lhs
-            case "Z":
-                switch lhs! {
-                case .paper:
-                    rhs = .scissors
-                case .scissors:
-                    rhs = .rock
-                case .rock:
-                    rhs = .paper
-                }
+            case "X": rhs = lhs?.willDominate()
+            case "Y": rhs = lhs
+            case "Z": rhs = lhs?.willBeDominatedBy()
             default: break
             }
+            
+            print(lhs!, rhs!)
             
             totalScore += SolutionDay2.scoreRound(them: lhs!, you: rhs!)
         }
