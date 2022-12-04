@@ -14,8 +14,10 @@ extension AdventOfCode2022 {
                                taskName: String(describing: type(of: self)),
                                scenario: (input == false ? .test : .input))
             
-            SolutionDay4.Part1(input:d.dataAsStringArray(omittingEmptySubsequences: true))
-            SolutionDay4.Part2(input:d.dataAsStringArray(omittingEmptySubsequences: true))
+            let solution = SolutionDay4()
+            
+            solution.Part1(input:d.dataAsStringArray(omittingEmptySubsequences: true))
+            solution.Part2(input:d.dataAsStringArray(omittingEmptySubsequences: true))
         }
     }
 }
@@ -26,6 +28,17 @@ struct SolutionDay4 {
         var lower : Int
         var upper : Int
         
+        init(lower: Int, upper: Int) {
+            self.lower = lower
+            self.upper = upper
+        }
+        
+        init(_ input:Substring) {
+            let parts = input.split(separator: "-", maxSplits: 2)
+            self.lower = Int(parts[0])!
+            self.upper = Int(parts[1])!
+        }
+        
         func totallyContains(_ other:ElfRange) -> Bool {
             return other.lower >= self.lower && other.upper <= self.upper
         }
@@ -34,39 +47,26 @@ struct SolutionDay4 {
             //(StartA <= EndB) and (EndA >= StartB)
             return self.lower <= other.upper && self.upper >= other.lower
         }
-    }
-    
-    static func extractRange(_ input:Substring) -> ElfRange {
-        let parts = input.split(separator: "-", maxSplits: 2)
-        return ElfRange(lower: Int(parts[0])!, upper: Int(parts[1])!)
         
     }
     
-    static func Part1(input:[String]) {
-        var count = 0
-        for line in input {
-            let result = line.split(separator: ",")
-                .map {extractRange($0)}
-            
-            if result[0].totallyContains(result[1]) || result[1].totallyContains(result[0]) {
-                count += 1
-            }
+    func Part1(input:[String]) {
+        let result = input.map {
+            let t = $0.split(separator: ",")
+                .map {ElfRange($0)}
+            return t[0].totallyContains(t[1]) || t[1].totallyContains(t[0])
+        }
+                
+        print(result.filter({$0}).count)
+    }
+    
+    func Part2(input:[String]) {
+        let result = input.map {
+            let t = $0.split(separator: ",")
+                .map({ElfRange($0)})
+            return t[0].overlaps(t[1])
         }
         
-        print(count)
-    }
-    
-    static func Part2(input:[String]) {
-        var count = 0
-        for line in input {
-            let result = line.split(separator: ",")
-                .map {extractRange($0)}
-
-            if result[0].overlaps(result[1]) {
-                count += 1
-            }
-        }
-        
-        print(count)
+        print(result.filter({$0}).count)
     }
 }
