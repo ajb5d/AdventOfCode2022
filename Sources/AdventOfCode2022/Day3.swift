@@ -32,7 +32,7 @@ struct SolutionDay3 {
         let bags = input.map {Array($0)}
         var result : [Int] = []
         
-        for bag in bags {            
+        for bag in bags {
             let left = Set(bag.prefix(bag.count / 2))
             let right = Set(bag.suffix(bag.count / 2))
             
