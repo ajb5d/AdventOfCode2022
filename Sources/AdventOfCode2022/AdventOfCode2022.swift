@@ -9,6 +9,7 @@ struct AdventOfCode2022 : ParsableCommand {
     static let commands : [ParsableCommand.Type] = [
         Day1.self,
         Day2.self,
-        Day3.self
+        Day3.self,
+        Day4.self
     ]
 }
