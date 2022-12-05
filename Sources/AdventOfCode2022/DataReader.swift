@@ -3,6 +3,10 @@ import Foundation
 struct DataReader {
     enum DataScenario : String {
         case test, input
+        
+        static func useInput(_ input:Bool) -> DataScenario {
+            return (input ? .input: .test)
+        }
     }
     
     var inputUrl : URL?

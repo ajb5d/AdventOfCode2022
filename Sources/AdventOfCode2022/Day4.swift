@@ -1,5 +1,7 @@
 import Foundation
 import ArgumentParser
+import Parsing
+
 
 extension AdventOfCode2022 {
     struct Day4: ParsableCommand {
@@ -27,18 +29,7 @@ struct SolutionDay4 {
     struct ElfRange{
         var lower : Int
         var upper : Int
-        
-        init(lower: Int, upper: Int) {
-            self.lower = lower
-            self.upper = upper
-        }
-        
-        init(_ input:Substring) {
-            let parts = input.split(separator: "-", maxSplits: 2)
-            self.lower = Int(parts[0])!
-            self.upper = Int(parts[1])!
-        }
-        
+
         func totallyContains(_ other:ElfRange) -> Bool {
             return other.lower >= self.lower && other.upper <= self.upper
         }
@@ -50,23 +41,22 @@ struct SolutionDay4 {
         
     }
     
+    static let elfrange = Parse { Int.parser(); "-"; Int.parser() }.map {ElfRange(lower: $0.0, upper: $0.1)}
+    static let lineparser = Parse { elfrange; ","; elfrange}
+    
     func Part1(input:[String]) {
         let result = input.map {
-            let t = $0.split(separator: ",")
-                .map {ElfRange($0)}
-            return t[0].totallyContains(t[1]) || t[1].totallyContains(t[0])
+            let t = try! SolutionDay4.lineparser.parse($0)
+            return t.0.totallyContains(t.1) || t.1.totallyContains(t.0)
         }
-                
         print(result.filter({$0}).count)
     }
     
     func Part2(input:[String]) {
         let result = input.map {
-            let t = $0.split(separator: ",")
-                .map({ElfRange($0)})
-            return t[0].overlaps(t[1])
+            let t = try! SolutionDay4.lineparser.parse($0)
+            return t.0.overlaps(t.1)
         }
-        
         print(result.filter({$0}).count)
     }
 }
