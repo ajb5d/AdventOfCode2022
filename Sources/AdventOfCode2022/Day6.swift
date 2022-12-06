@@ -1,8 +1,6 @@
 import Foundation
 import ArgumentParser
-import Parsing
 import DequeModule
-
 
 extension AdventOfCode2022 {
     struct Day6: ParsableCommand {
@@ -26,34 +24,17 @@ extension AdventOfCode2022 {
 }
 
 struct SolutionDay6 {
-
-    func processLine(_ line:[Character], withUnqiueCharacters:Int = 4) -> Int {
-        var marker : Deque<Character> = Deque(line.prefix(withUnqiueCharacters))
-        for i in withUnqiueCharacters..<line.count {
-            if Set(marker).count == withUnqiueCharacters {
-                return i
-            }
-            
-            marker.removeFirst()
-            marker.append(line[i])
-        }
-        return -1
+    func processLine(_ line:String, withUnqiueCharacters:Int = 4) -> Int {
+        return Array(line).windows(ofCount: withUnqiueCharacters)
+            .map {Set($0).count}
+            .firstIndex(where: {$0 == withUnqiueCharacters})! + withUnqiueCharacters
     }
 
     func Part1(input:[String]) {
-        for line in input {
-            let r = self.processLine(Array(line))
-            print("\(r) \(line)")
-        }
+        print(input.map({self.processLine($0)}))
     }
     
     func Part2(input:[String]) {
-        for line in input {
-            let r = self.processLine(Array(line), withUnqiueCharacters: 14)
-            print("\(r) \(line)")
-        }
+        print(input.map({self.processLine($0, withUnqiueCharacters: 14)}))
     }
-    
-
-
 }
