@@ -27,7 +27,7 @@ extension AdventOfCode2022 {
 
 struct SolutionDay5 {
     static let itemLine = OneOf {
-        Parse {"["; Prefix { $0 != "]" }.map(String.init); "]"}
+        Parse {"["; CharacterSet.uppercaseLetters.map {String($0)} ; "]"}
         "   ".map {""}
     }
     static let lineParser = Many { itemLine } separator: { " " }
