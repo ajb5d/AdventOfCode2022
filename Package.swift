@@ -28,7 +28,7 @@ let package = Package(
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "Collections", package: "swift-collections"),
-                .product(name: "Parsing", package: "swift-parsing")
+                .product(name: "Parsing", package: "swift-parsing"),
             ], resources: [
                 .copy("Data")
             ]),
