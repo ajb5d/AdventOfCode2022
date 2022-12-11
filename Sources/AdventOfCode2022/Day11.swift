@@ -19,7 +19,7 @@ extension AdventOfCode2022 {
             let solution = SolutionDay11()
             
             solution.Part1(input:d.dataAsString())
-            solution.Part2(input:d.dataAsString())
+            solution.Part1(input:d.dataAsString(), rounds: 10000, divisor: 1)
         }
     }
 }
@@ -98,44 +98,20 @@ struct SolutionDay11 {
         startingItemsLine
         operationLine
         testBlock
-    }.map {
-        Monkey(id: $0, items: $1, operation: $2, condition: $3.0, trueTarget: $3.1, falseTarget: $3.2)
-    }
+    }.map { Monkey(id: $0, items: $1, operation: $2, condition: $3.0, trueTarget: $3.1, falseTarget: $3.2) }
     
-    static let inputParser = Parse {
-        Many { monkeyParser } separator: {
-            "\n"
-        }
-    }
+    static let inputParser = Parse { Many { monkeyParser } separator: { "\n" } }
     
-    func Part1(input:String) {
-        var monkeys = try! SolutionDay11.inputParser.parse(input)
-        
-        
-        for _ in 1...20 {
-            for i in 0..<monkeys.count {
-                while monkeys[i].items.count > 0 {
-                    var item = monkeys[i].items.removeFirst()
-                    monkeys[i].itemsInspected += 1
-                    item = monkeys[i].process(item) / 3
-                    monkeys[monkeys[i].target(item)].items.append(item)
-                }
-            }
-        }
-        
-        print(monkeys.map(\.itemsInspected).sorted().suffix(2).reduce(1, *))
-    }
-    
-    func Part2(input:String) {
+    func Part1(input:String, rounds:Int = 20, divisor:Int = 3) {
         var monkeys = try! SolutionDay11.inputParser.parse(input)
         let modulo = monkeys.map(\.condition).reduce(1, *)
         
-        for _ in 1...10000 {
+        for _ in 1...rounds {
             for i in 0..<monkeys.count {
                 while monkeys[i].items.count > 0 {
                     var item = monkeys[i].items.removeFirst()
                     monkeys[i].itemsInspected += 1
-                    item = monkeys[i].process(item) % modulo
+                    item = monkeys[i].process(item) / divisor % modulo
                     monkeys[monkeys[i].target(item)].items.append(item)
                 }
             }
