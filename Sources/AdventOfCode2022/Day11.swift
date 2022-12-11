@@ -1,7 +1,6 @@
 import Foundation
 import ArgumentParser
 import Parsing
-import Algorithms
 
 extension AdventOfCode2022 {
     struct Day11: ParsableCommand {
