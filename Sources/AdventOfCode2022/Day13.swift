@@ -50,36 +50,24 @@ struct SolutionDay13 {
                     
                     if parsedLine[endIndex] == "]" {
                         nestingLevel -= 1
-                        if nestingLevel == 0 {
-                            break
-                        }
+                        if nestingLevel == 0 { break }
                     }
                     endIndex = parsedLine.index(after: endIndex)
                 }
                 let subStr = String(parsedLine[index...endIndex])
                 result.append(ListElement.list(self.parse(subStr)))
                 index = parsedLine.index(after: endIndex)
-                if index < parsedLine.endIndex && line[index] == "," {
-                    index = parsedLine.index(after: index)
-                }
                 
             default:
-                var endIndex = index
-                while true {
-                    endIndex = parsedLine.index(after: endIndex)
-                    if endIndex == parsedLine.endIndex || parsedLine[endIndex] == "," {
-                        break
-                    }
-                }
-                
+                let endIndex = parsedLine.suffix(from: index).firstIndex(of: ",") ?? parsedLine.endIndex
                 result.append(ListElement.literal(Int(parsedLine[index..<endIndex])!))
                 index = endIndex
-                if index < parsedLine.endIndex && line[index] == "," {
-                    index = parsedLine.index(after: index)
-                }
+            }
+            
+            if index < parsedLine.endIndex && line[index] == "," {
+                index = parsedLine.index(after: index)
             }
         }
-        
         return result
     }
     
@@ -88,55 +76,32 @@ struct SolutionDay13 {
     }
     
     func compareList(l:[ListElement], r:[ListElement]) -> CompareResult {
-        var i = 0
-        while i < max(l.count, r.count) {
-            if i >= r.count {
-                return .leftOrder
-            }
-            if i >= l.count {
-                return .rightOrder
-            }
+        for i in 0..<max(l.count, r.count) {
+            if i >= r.count { return .leftOrder }
+            if i >= l.count { return .rightOrder }
             
             switch (l[i], r[i]) {
-                
             case let(.literal(lv), .literal(rv)):
-                if lv < rv {
-                    return .rightOrder
-                }
-                
-                if rv < lv {
-                    return .leftOrder
-                }
-
-                
+                if lv < rv { return .rightOrder }
+                if rv < lv { return .leftOrder }
             case let(.list(lv), .list(rv)):
                 let r = compareList(l: lv, r: rv)
-                if r != .inconclusive {
-                    return r
-                }
-
+                if r != .inconclusive { return r }
             case let(.list(lv), .literal(_)):
                 let r = compareList(l: lv, r: [r[i]])
-                if r != .inconclusive {
-                    return r
-                }
-
+                if r != .inconclusive { return r }
             case let(.literal(_), .list(rv)):
                 let r = compareList(l: [l[i]], r: rv)
-                if r != .inconclusive {
-                    return r
-                }
+                if r != .inconclusive { return r }
             }
-            
-            i += 1
         }
+        
         return .inconclusive
     }
     
     func Part1(input:[String]) {
         var sum = 0
         for (idx, block) in input.chunks(ofCount: 3).enumerated() {
-            
             let left = self.parse(block[block.startIndex])
             let right = self.parse(block[block.index(after: block.startIndex)])
             
@@ -152,15 +117,10 @@ struct SolutionDay13 {
     
     func Part2(input:[String]) {
         var i = input.filter({$0 != ""})
-        i.append("[[2]]")
-        i.append("[[6]]")
+        let targets = ["[[2]]", "[[6]]"]
+        i.append(contentsOf: targets)
         
-        i = i.sorted {
-            let lv = parse($0)
-            let rv = parse($1)
-            
-            return compareList(l: lv, r: rv) == .rightOrder
-        }
+        i = i.sorted { return compareList(l: parse($0), r: parse($1)) == .rightOrder }
         
         let d1 = i.firstIndex(of: "[[2]]")! + 1
         let d2 = i.firstIndex(of: "[[6]]")! + 1
