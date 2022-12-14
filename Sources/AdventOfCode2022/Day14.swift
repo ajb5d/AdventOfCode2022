@@ -16,11 +16,16 @@ extension AdventOfCode2022 {
                                taskName: String(describing: type(of: self)),
                                scenario: (input == false ? .test : .input))
             
+            let startTime = Date()
+            
             let solution = SolutionDay14()
-
+            
             solution.Part1(input:d.dataAsString())
-//            solution.Part2(input:d.dataAsStringArray(omittingEmptySubsequences: false))
+            print(Date().timeIntervalSince(startTime))
+            solution.Part1(input:d.dataAsString(), addFloor: true)
+            print(Date().timeIntervalSince(startTime))
         }
+        
     }
 }
 
@@ -28,15 +33,13 @@ struct SolutionDay14 {
     enum CoordinateType : CustomStringConvertible {
         var description: String {
             switch self {
-            case .wall:
-                return "#"
-            case .sand:
-                return "o"
+            case .wall: return "#"
+            case .sand: return "o"
+            case .floor: return "-"
             }
         }
         
-        case wall, sand
-        
+        case wall, sand, floor
     }
     
     struct Coordinate : CustomStringConvertible, Equatable {
@@ -74,7 +77,8 @@ struct SolutionDay14 {
     }
     
     struct WorldMap {
-        var worldData = Array(repeating: Deque<Coordinate>(), count: 1000)
+        var worldData: [[Coordinate]] = Array(repeating: [], count: 1000)
+        var floorDepth : Int? = nil
         
         mutating func buildWalls(_ input: [[Coordinate]]) {
             for wall in input {
@@ -100,21 +104,33 @@ struct SolutionDay14 {
         
         mutating func addPoint(point:Coordinate) {
             self.worldData[point.x].append(point)
+            self.worldData[point.x].sort(by: {$0.y < $1.y})
         }
         
         func has(point:Coordinate) -> CoordinateType? {
             if let p = self.worldData[point.x].first(where: {$0 == point}) {
                 return p.type
             }
+            
+            if let floorDepth {
+                if point.y == floorDepth {
+                    return .floor
+                }
+            }
             return nil
         }
         
-        func printWold() {
-            let minX = self.worldData.firstIndex(where: {$0.count > 0}) ?? 495
-            let maxX = self.worldData.lastIndex(where: {$0.count > 0}) ?? 505
+        func printWorld() {
+            let minX = (self.worldData.firstIndex(where: {$0.count > 0}) ?? 495) - 5
+            let maxX = (self.worldData.lastIndex(where: {$0.count > 0}) ?? 505) + 5
             
             let minY = self.worldData.map { $0.map(\.y).min() ?? 0 }.min() ?? 0
-            let maxY = self.worldData.map { $0.map(\.y).max() ?? 0 }.max() ?? 10
+            let maxY = (floorDepth ?? self.worldData.map { $0.map(\.y).max() ?? 0 }.max() ?? 0) + 1
+            
+            for pow in [100, 10, 1] {
+                let r = (minX...maxX).map { String(($0 / pow) % 10) } .joined()
+                print("      \(r)")
+            }
             
             for y in stride(from: minY, through: maxY, by: 1) {
                 let v = stride(from: minX, through: maxX, by: 1).map {
@@ -123,30 +139,52 @@ struct SolutionDay14 {
                     case let .some(x): return x.description
                     }
                 }.joined()
-                print("\(y)    \(v)")
+                let ylabel = String(format: "%02d", y)
+                print("\(ylabel)    \(v)")
             }
             
         }
         
         func firstHitFrom(point:Coordinate) -> Coordinate? {
-            return self.worldData[point.x].filter({$0.y > point.y}).sorted(by: {$0.y < $1.y}).first
+            if let hit = self.worldData[point.x].first(where: {$0.y > point.y}) {
+                return hit
+            }
+            
+            if let floorDepth {
+                return Coordinate(x: point.x, y: floorDepth, type: .wall)
+            }
+            
+            return nil
         }
         
         func occupied(point:Coordinate) -> Bool {
-            return self.worldData[point.x].first(where: {$0.y == point.y}) != nil
+            let hit = self.worldData[point.x].first(where: {$0.y == point.y})
+            switch hit {
+            case .some(_): return true
+            case .none:
+                if let floorDepth {
+                    return point.y == floorDepth
+                }
+                return false
+            }
         }
     }
     
-    func Part1(input:String) {
+    func Part1(input:String, maxSteps:Int = 100000, addFloor:Bool = false) {
         let walls = try! Parsers.input.parse(input)
         var w = WorldMap()
+        
         w.buildWalls(walls)
         
-        for i in 1...1000 {
+        if addFloor {
+            let maxDepth = walls.map({ $0.map(\.y).max() ?? 0 }).max() ?? 0
+            w.floorDepth = maxDepth + 2
+        }
+        
+        for i in 0..<maxSteps {
             var sand = Coordinate(x: 500, y: 0, type: .sand)
             var settled = false
             while !settled {
-                
                 if let other = w.firstHitFrom(point: sand) {
                     sand.advanceTo(hitPoint: other)
                     if !w.occupied(point: sand.diagonalLeft()) {
@@ -154,20 +192,27 @@ struct SolutionDay14 {
                     } else if !w.occupied(point: sand.diagonalRight()) {
                         sand = sand.diagonalRight()
                     } else {
+                        if sand == Coordinate(x: 500, y: 0, type: .sand) {
+                            print("blocked")
+                            print(i+1)
+                            return
+                        }
                         w.addPoint(point: sand)
+                        sand.y = sand.y - 1
                         settled = true
                     }
                     
                 } else {
                     print("fell into the abyss")
-                    print(i-1)
-//                    w.printWold()
+                    print(i)
                     return
                 }
             }
             
 
         }
-        w.printWold()
+        
+        print("Simulation did not end after \(maxSteps) steps")
+        w.printWorld()
     }
 }
