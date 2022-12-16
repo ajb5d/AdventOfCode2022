@@ -136,7 +136,7 @@ struct SolutionDay16 {
             return score
         }
         
-        if state.remainingTime == 0 {
+        if state.remainingTime <= 0 {
             // We are out of time
             return 0
         }
@@ -146,11 +146,12 @@ struct SolutionDay16 {
             return 0
         }
         
+        
         if !state.openedValves.contains(state.currentNode) && nodeState[state.currentNode].flowRate > 0 {
             // not open yet
             let newState = state.stateFollowing(opening: state.currentNode)
             let newScore = score(state: newState) +  nodeState[state.currentNode].flowRate * (state.remainingTime - 1)
-            
+                        
             scoreCache[state] = newScore
             return newScore
         }
@@ -158,6 +159,10 @@ struct SolutionDay16 {
         var possibleStates : [PuzzleState] = []
         
         let remainingValves = targetNodeIds.subtracting(state.openedValves)
+        let minDistance = remainingValves.map { distances[state.currentNode][$0] }.min()!
+        if state.remainingTime < minDistance {
+            return 0
+        }
         
         for target in remainingValves {
             let newState = state.stateFollowing(move: target, cost: distances[state.currentNode][target])
