@@ -16,14 +16,20 @@ extension AdventOfCode2022 {
                                taskName: String(describing: type(of: self)),
                                scenario: (input == false ? .test : .input))
             
-            let startTime = Date()
-            
             let solution = SolutionDay15()
             
-            solution.Part1(input:d.dataAsString(), targetRow: input ? 2000000 : 10 )
-            print(Date().timeIntervalSince(startTime))
-            solution.Part2(input:d.dataAsString(), extent: input ? 4000000 : 20 )
-            print(Date().timeIntervalSince(startTime))
+            let c = ContinuousClock()
+            
+            var elapsed = c.measure {
+                solution.Part1(input:d.dataAsString(), targetRow: input ? 2000000 : 10 )
+            }
+            print(elapsed)
+            
+            elapsed = c.measure {
+                solution.Part2(input:d.dataAsString(), extent: input ? 4000000 : 20 )
+            }
+            print(elapsed)
+
         }
         
     }
@@ -147,12 +153,13 @@ struct SolutionDay15 {
     
     func Part2(input:String, extent:Int) {
         let observations = try! Parsers.input.parse(input)
-//        printWorld(observations, highlight: -1, extentX: (0, 20), extentY: (0, 20))
+        let target = 0..<(extent+1)
         
-        for targetRow in 0...extent {
-            let hits = observations.filter({!$0.widthAtRow(row: targetRow).isEmpty})
-            let target = 0..<(extent+1)
-            let extents  = hits.map{$0.widthAtRow(row: targetRow)}.map {$0.clamped(to: target)}
+        for targetRow in target {
+            let extents = observations
+                .filter {!$0.widthAtRow(row: targetRow).isEmpty}
+                .map {$0.widthAtRow(row: targetRow)}
+                .map {$0.clamped(to: target)}
             
             var maxContinuousUpper = 0
             for e in extents.sorted(by: {$0.lowerBound < $1.lowerBound}) {
