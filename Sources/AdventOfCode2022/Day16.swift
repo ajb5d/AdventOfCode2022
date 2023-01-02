@@ -20,7 +20,7 @@ extension AdventOfCode2022 {
             
             let c = ContinuousClock()
             
-            var elapsed = c.measure {
+            let elapsed = c.measure {
                 var solution = SolutionDay16(input:d.dataAsString())
                 solution.Part1()
             }

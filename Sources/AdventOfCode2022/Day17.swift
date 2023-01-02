@@ -16,11 +16,11 @@ extension AdventOfCode2022 {
                                taskName: String(describing: type(of: self)),
                                scenario: (input == false ? .test : .input))
             
-//            let elapsed1 = ContinuousClock().measure {
-//                let solution = SolutionDay17(input:d.dataAsString())
-//                solution.Part1(rounds: 2023)
-//            }
-//            print(elapsed1)
+            let elapsed1 = ContinuousClock().measure {
+                let solution = SolutionDay17(input:d.dataAsString())
+                solution.Part1(rounds: 2023)
+            }
+            print(elapsed1)
             
 //            let elapsed2 = ContinuousClock().measure {
 //                let solution = SolutionDay17(input:d.dataAsString())
@@ -200,7 +200,7 @@ struct SolutionDay17 {
     
     func Part2(maxRounds:Int) {
         let BIG = 100000
-        let m = directions.count * Rock.Shape.allCases.count
+//        let m = directions.count * Rock.Shape.allCases.count
         
         var startHeight = 3
         var last = 0
